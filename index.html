@@ -41,6 +41,9 @@
         model: MessageModel
     });
 
+    //data
+    var messageText = '';
+
 
     AddView = Backbone.View.extend({
         initialize: function () {
@@ -55,7 +58,7 @@
             "click input[type=button]": "CreateMessage"
         },
         CreateMessage: function () {
-            messages.add(new MessageModel({message : $('#search_input').val()}));
+            messages.add(new MessageModel({message: $('#search_input').val()}));
         }
     });
 
@@ -63,16 +66,20 @@
         initialize: function () {
             this.listenTo(messages, 'add', this.render);
         },
-        render: function () {console.log(messages);
-            var template = _.template($("#liste_template").html(), {});
-            this.$el.html(template());
 
+        render: function () {
+
+            messages.each(function (model, index, attribute) {
+                messageText =  attribute[index].attributes.message;
+            });
+
+            var template = _.template($("#liste_template").html(), {message : messageText});
+            this.$el.html(template);
         }
     });
 
     var search_view = new AddView({el: $("#search_container")});
     var list_serach = new ListView({el: $('#list-search'), collection: messages});
-
 
 
 </script>
