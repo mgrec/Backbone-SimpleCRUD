@@ -1,18 +1,69 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Template page</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+    <title>Contacts</title>
+    <meta charset="utf-8" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script>
+        (function ($)
+        {
+            //Données mocks object correspondant à la liste des contacts
+            var contacts;
 
-    <!-- Templates -->
+            /**
+             * Document ready event
+             * alias de $(document).ready( function(){} );
+             */
+            $( function ()
+            {
+                /**
+                 *  Réception des données du serveur
+                 *
+                 */
+                var main = function()
+                {
+                    // Liste de contacts json
+                    contacts =
+                            [
+                                { id:1, nom:"ALLIOD", prenom:"Sebastien" },
+                                { id:2, nom:"MANNEVILLE", prenom:"Fabien" },
+                                { id:3, nom:"ROSSIGNOL", prenom:"Laurent" },
+                                { id:4, nom:"LEBADEZET", prenom:"Vincent" },
+                                { id:5, nom:"DEHAUSSY", prenom:"Matthieu" }
+                            ];
 
+                    // Annule le message de chargement
+                    $( "#loading").remove();
+
+                    // Renseigne les éléments de la liste
+                    var $contact_list = $( "#contact_list")
+                            ,contact;
+                    for( var i= 0, l = contacts.length; i<l; i++ )
+                    {
+                        contact = contacts[i];
+                        $contact_list.append
+                        (
+                                "<li><a href='contact.php?id="+ contact.id +"'>"+
+                                contact.prenom + " "+ contact.nom +
+                                "</a>" +
+                                "</li>"
+                        );
+                    }
+
+                };
+
+
+                $( "body" ).append( "<h1 id='loading'>Merci de patienter pendant le chargement des données</h1>" );
+                // Active une pseudo requête async HTTP
+                setTimeout( main, 3000 );
+            });
+        })(jQuery);
+
+    </script>
 </head>
 <body>
-<li><a href=""></a>Jean BON</li>
-<li><a href=""></a>Charles PATE</li>
-<li><a href=""></a>Anne ONYME</li>
+<ul id="contact_list">
+</ul>
 </body>
 </html>
