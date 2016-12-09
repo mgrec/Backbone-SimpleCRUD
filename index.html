@@ -1,69 +1,80 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Contacts</title>
-    <meta charset="utf-8" />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <script>
-        (function ($)
-        {
-            //Données mocks object correspondant à la liste des contacts
-            var contacts;
+    <meta charset="UTF-8">
+    <title>Template page</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
 
-            /**
-             * Document ready event
-             * alias de $(document).ready( function(){} );
-             */
-            $( function ()
-            {
-                /**
-                 *  Réception des données du serveur
-                 *
-                 */
-                var main = function()
-                {
-                    // Liste de contacts json
-                    contacts =
-                            [
-                                { id:1, nom:"ALLIOD", prenom:"Sebastien" },
-                                { id:2, nom:"MANNEVILLE", prenom:"Fabien" },
-                                { id:3, nom:"ROSSIGNOL", prenom:"Laurent" },
-                                { id:4, nom:"LEBADEZET", prenom:"Vincent" },
-                                { id:5, nom:"DEHAUSSY", prenom:"Matthieu" }
-                            ];
+    <!-- Templates -->
 
-                    // Annule le message de chargement
-                    $( "#loading").remove();
-
-                    // Renseigne les éléments de la liste
-                    var $contact_list = $( "#contact_list")
-                            ,contact;
-                    for( var i= 0, l = contacts.length; i<l; i++ )
-                    {
-                        contact = contacts[i];
-                        $contact_list.append
-                        (
-                                "<li><a href='contact.php?id="+ contact.id +"'>"+
-                                contact.prenom + " "+ contact.nom +
-                                "</a>" +
-                                "</li>"
-                        );
-                    }
-
-                };
-
-
-                $( "body" ).append( "<h1 id='loading'>Merci de patienter pendant le chargement des données</h1>" );
-                // Active une pseudo requête async HTTP
-                setTimeout( main, 3000 );
-            });
-        })(jQuery);
-
-    </script>
 </head>
 <body>
-<ul id="contact_list">
-</ul>
+<script type="text/template" id="search_template">
+    <label>Recherche</label>
+    <input type="text" id="search_input"/>
+    <input type="button" id="search_button" value="Search"/>
+</script>
+
+<div id="search_container">
+</div>
+
+<div id="list-search">
+    <script type="text/template" id="liste_template">
+        <label><%= message %></label>
+    </script>
+</div>
+
+
+<script>
+
+    // Model de message
+    var MessageModel = Backbone.Model.extend({
+        defaults: {
+            message: ''
+        }
+    });
+
+    // Collection des messages
+    var MessageCollection = Backbone.Collection.extend({
+        model: MessageModel
+    });
+
+
+    AddView = Backbone.View.extend({
+        initialize: function () {
+            this.render();
+            messages = new MessageCollection();
+        },
+        render: function () {
+            var template = _.template($("#search_template").html(), {});
+            this.$el.html(template);
+        },
+        events: {
+            "click input[type=button]": "CreateMessage"
+        },
+        CreateMessage: function () {
+            messages.add(new MessageModel({message : $('#search_input').val()}));
+        }
+    });
+
+    ListView = Backbone.View.extend({
+        initialize: function () {
+            this.listenTo(messages, 'add', this.render);
+        },
+        render: function () {console.log(messages);
+            var template = _.template($("#liste_template").html(), {});
+            this.$el.html(template());
+
+        }
+    });
+
+    var search_view = new AddView({el: $("#search_container")});
+    var list_serach = new ListView({el: $('#list-search'), collection: messages});
+
+
+
+</script>
 </body>
 </html>
